@@ -509,8 +509,6 @@
   /* Print/Export */
 
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
 
@@ -670,7 +668,7 @@
 <!-- ── EXPORT ── -->
 <div class="export-btn-wrap" style="background:#232136;padding:12px 40px;display:flex;align-items:center;gap:16px;border-bottom:1px solid rgba(255,255,255,0.07);">
   <button onclick="exportPDF()" style="background:#5951FF;border:none;border-radius:10px;color:#fff;cursor:pointer;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:13px;font-weight:600;padding:10px 24px;letter-spacing:0.02em;transition:background 0.2s;">⬇ Export as PDF</button>
-  <span style="font-size:12px;color:rgba(255,255,255,0.35);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">Opens print dialog — select "Save as PDF" and set Layout to Landscape</span>
+  <span style="font-size:12px;color:rgba(255,255,255,0.35);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">Opens slide in a clean new tab → print dialog auto-opens → select "Save as PDF"</span>
 </div>
 
 <!-- ── PREVIEW ── -->
@@ -936,41 +934,44 @@
   }
 
   // ── EXPORT ──
-  async function exportPDF() {
-    const btn = document.querySelector('.export-btn-wrap button');
-    const originalText = btn.innerText;
-    btn.innerText = '⏳ Generating PDF...';
-    btn.disabled = true;
-
-    const slide = document.getElementById('slide');
-    const canvas = await html2canvas(slide, {
-      scale: 2,
-      useCORS: true,
-      backgroundColor: '#f8f7fc',
-      logging: false,
-      width: slide.offsetWidth,
-      height: slide.offsetHeight
-    });
-
-    const imgData = canvas.toDataURL('image/png');
-    const { jsPDF } = window.jspdf;
-
-    const slideW = slide.offsetWidth;
-    const slideH = slide.offsetHeight;
-    const ratio = slideH / slideW;
-
-    // A4 landscape in mm
-    const pdfW = 297;
-    const pdfH = pdfW * ratio;
-
-    const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: [pdfW, pdfH] });
-    pdf.addImage(imgData, 'PNG', 0, 0, pdfW, pdfH);
-
+  function exportPDF() {
+    // Grab the current rendered slide HTML
+    const slideHTML = document.getElementById('slide').outerHTML;
     const customerName = document.getElementById('customerName').value || 'Proposal';
-    pdf.save(`${customerName} - Outreach Proposal.pdf`);
 
-    btn.innerText = originalText;
-    btn.disabled = false;
+    // Build a clean standalone page with just the slide
+    const printPage = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>${customerName} - Outreach Proposal</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  html, body { width: 1100px; background: #1a1825; }
+  body { display: flex; justify-content: center; align-items: flex-start; padding: 0; }
+  @page { size: 1100px auto; margin: 0; }
+  @media print {
+    html, body { width: 1100px; }
+    .slide { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+${slideHTML}
+<script>
+  // Auto-trigger print dialog as soon as fonts/styles load
+  window.onload = function() {
+    setTimeout(function() { window.print(); }, 800);
+  };
+<\/script>
+</body>
+</html>`;
+
+    // Open in new tab
+    const w = window.open('', '_blank');
+    w.document.open();
+    w.document.write(printPage);
+    w.document.close();
   }
 
   // ── INIT ──
