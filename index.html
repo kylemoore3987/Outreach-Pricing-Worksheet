@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Outreach · Pricing Proposal Template</title>
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #2D2342;
+    --cream: #f8f7fc;
+    --accent: #5951FF;
+    --accent-light: #a29bfe;
+    --gold: #5951FF;
+    --muted: #6b6b7b;
+    --border: #e2e0f0;
+    --save-green: #00b894;
+    --editor-bg: #1e1830;
+  }
+
+  body {
+    background: var(--editor-bg);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    min-height: 100vh;
+  }
+
+  /* ── EDITOR PANEL ── */
+  .editor-wrap {
+    background: #232136;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    padding: 28px 40px;
+  }
+
+  .editor-title {
+    font-family: 'SF Mono', Consolas, 'Cascadia Code', 'Courier New', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent-light);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .editor-title::before {
+    content: '';
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .editor-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .editor-grid-wide {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .field label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+  }
+
+  .field input, .field select {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-family: 'SF Mono', Consolas, 'Cascadia Code', 'Courier New', monospace;
+    font-size: 13px;
+    color: #fff;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+  }
+
+  .field input:focus, .field select:focus {
+    border-color: var(--accent);
+  }
+
+  .field select option { background: #232136; color: #fff; }
+
+  .section-divider {
+    border: none;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    margin: 16px 0;
+  }
+
+  .editor-section-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.25);
+    margin-bottom: 12px;
+  }
+
+  .line-item-editor {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 36px;
+    gap: 8px;
+    align-items: end;
+    margin-bottom: 8px;
+  }
+
+  .line-item-editor .field label { font-size: 9px; }
+
+  .remove-btn {
+    background: rgba(255,80,80,0.15);
+    border: 1px solid rgba(255,80,80,0.2);
+    border-radius: 8px;
+    color: #ff6b6b;
+    cursor: pointer;
+    font-size: 16px;
+    height: 36px;
+    width: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+
+  .remove-btn:hover { background: rgba(255,80,80,0.3); }
+
+  .add-item-btn {
+    background: rgba(89,81,255,0.12);
+    border: 1px dashed rgba(89,81,255,0.35);
+    border-radius: 8px;
+    color: var(--accent-light);
+    cursor: pointer;
+    font-size: 12px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    font-weight: 500;
+    padding: 8px 16px;
+    margin-top: 4px;
+    transition: background 0.2s;
+  }
+
+  .add-item-btn:hover { background: rgba(89,81,255,0.22); }
+
+  .update-btn {
+    background: var(--accent);
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    cursor: pointer;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 11px 28px;
+    margin-top: 16px;
+    transition: background 0.2s, transform 0.1s;
+    letter-spacing: 0.02em;
+  }
+
+  .update-btn:hover { background: #4840e0; transform: translateY(-1px); }
+  .update-btn:active { transform: translateY(0); }
+
+  /* ── SLIDE PREVIEW ── */
+  .preview-wrap {
+    padding: 40px 20px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .slide {
+    width: 1100px;
+    background: var(--cream);
+    border-radius: 24px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 40px 120px rgba(0,0,0,0.5);
+    animation: fadeUp 0.5s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--ink);
+    padding: 44px 56px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(89,81,255,0.4) 0%, transparent 70%);
+  }
+
+  .eyebrow {
+    font-family: 'SF Mono', Consolas, 'Cascadia Code', 'Courier New', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--accent-light);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .header h1 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 42px;
+    font-weight: 900;
+    color: #fff;
+    line-height: 1.1;
+  }
+
+  .header h1 span { color: var(--accent-light); }
+
+  .header-right { text-align: right; }
+
+  .total-label {
+    font-size: 12px;
+    color: rgba(255,255,255,0.45);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .total-amount {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 48px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1;
+  }
+
+  .total-sub {
+    font-size: 13px;
+    color: rgba(255,255,255,0.4);
+    margin-top: 4px;
+  }
+
+  /* SAVINGS BANNER */
+  .savings-banner {
+    background: var(--save-green);
+    padding: 14px 56px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .savings-banner p {
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+  }
+
+  .savings-banner strong { font-size: 16px; }
+
+  /* BODY */
+  .body {
+    padding: 48px 56px;
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 40px;
+    align-items: stretch;
+  }
+
+  /* LINE ITEMS */
+  .line-items { display: flex; flex-direction: column; }
+  .line-items-inner { flex: 1; }
+  .group-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+
+  .group-tag {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 100px;
+  }
+
+  .tag-core { background: rgba(89,81,255,0.12); color: var(--accent); }
+  .tag-addon { background: rgba(89,81,255,0.08); color: #7c6fff; }
+  .tag-ai { background: rgba(0,184,148,0.12); color: var(--save-green); }
+
+  .item {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 12px;
+    align-items: center;
+    padding: 14px 18px;
+    border-radius: 12px;
+    margin-bottom: 6px;
+    transition: background 0.2s;
+  }
+
+  .item:hover { background: rgba(89,81,255,0.05); }
+
+  .item-name { font-size: 15px; font-weight: 500; color: var(--ink); }
+  .item-detail { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  .item-seats {
+    font-family: 'SF Mono', Consolas, 'Cascadia Code', 'Courier New', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .item-cost {
+    font-family: 'SF Mono', Consolas, 'Cascadia Code', 'Courier New', monospace;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--ink);
+    text-align: right;
+    min-width: 90px;
+    white-space: nowrap;
+  }
+
+  .strike { text-decoration: line-through; color: #bbb; font-size: 12px; margin-right: 4px; }
+
+  .ai-item {
+    background: rgba(0,184,148,0.06);
+    border: 1px solid rgba(0,184,148,0.2);
+  }
+
+  .ai-item:hover { background: rgba(0,184,148,0.1); }
+
+  .group-divider {
+    border: none;
+    border-top: 1px dashed var(--border);
+    margin: 4px 0 20px;
+  }
+
+  .item-group { margin-bottom: 28px; }
+
+  /* RIGHT PANEL */
+  .right-panel { display: flex; flex-direction: column; gap: 20px; height: 100%; }
+  .why-now-card { flex: 1; }
+
+  .savings-card {
+    background: var(--ink);
+    border-radius: 18px;
+    padding: 28px;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .savings-card::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; right: -40px;
+    width: 140px; height: 140px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(89,81,255,0.45) 0%, transparent 70%);
+  }
+
+  .card-label {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.45);
+    margin-bottom: 12px;
+    font-family: 'SF Mono', Consolas, 'Cascadia Code', 'Courier New', monospace;
+  }
+
+  .savings-big {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 52px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .savings-sub { font-size: 13px; color: rgba(255,255,255,0.5); }
+
+  .savings-divider {
+    border: none;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    margin: 18px 0;
+  }
+
+  .savings-breakdown { display: flex; flex-direction: column; gap: 8px; }
+
+  .savings-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+  }
+
+  .why-now-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 24px 28px;
+  }
+
+  .why-now-card .card-label { color: var(--muted); margin-bottom: 16px; }
+
+  .why-row { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 14px; }
+  .why-row:last-child { margin-bottom: 0; }
+
+  .why-icon {
+    width: 32px; height: 32px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    font-size: 15px;
+  }
+
+  .why-icon-1 { background: rgba(89,81,255,0.12); }
+  .why-icon-2 { background: rgba(0,184,148,0.1); }
+
+  .why-title { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 3px; }
+  .why-body { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+  .terms-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 24px 28px;
+  }
+
+  .terms-card .card-label { color: var(--muted); margin-bottom: 18px; }
+
+  .term-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+
+  .term-row:last-child { border-bottom: none; }
+  .term-key { color: var(--muted); }
+
+  .term-val {
+    font-weight: 600;
+    color: var(--ink);
+    font-family: 'SF Mono', Consolas, 'Cascadia Code', 'Courier New', monospace;
+    font-size: 12px;
+  }
+
+  .renewal-badge {
+    display: inline-block;
+    background: rgba(89,81,255,0.1);
+    color: var(--accent);
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-family: 'SF Mono', Consolas, 'Cascadia Code', 'Courier New', monospace;
+    font-size: 12px;
+  }
+
+  .uplift-note {
+    background: rgba(108,92,231,0.07);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 10px 10px 0;
+    padding: 14px 18px;
+    font-size: 12.5px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .uplift-note strong { color: var(--accent); }
+
+  /* FOOTER */
+  .footer {
+    border-top: 1px solid var(--border);
+    padding: 20px 56px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-left { font-size: 12px; color: var(--muted); }
+  .footer-left strong { color: var(--ink); }
+
+  .outreach-logo {
+    display: flex;
+    align-items: center;
+  }
+
+  /* Print/Export */
+  @media print {
+    .editor-wrap { display: none; }
+    body { background: white; }
+    .preview-wrap { padding: 0; }
+    .slide { border-radius: 0; box-shadow: none; width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── EDITOR ── -->
+<div class="editor-wrap">
+  <div class="editor-title">Outreach Pricing Proposal · Template Editor</div>
+
+  <!-- Deal Info -->
+  <div class="editor-section-label">Deal Info</div>
+  <div class="editor-grid">
+    <div class="field">
+      <label>Customer Name</label>
+      <input type="text" id="customerName" value="Culture Amp" placeholder="e.g. Acme Corp">
+    </div>
+    <div class="field">
+      <label>Proposal Type</label>
+      <select id="proposalType">
+        <option value="Renewal">Renewal</option>
+        <option value="New Business">New Business</option>
+        <option value="Expansion">Expansion</option>
+        <option value="Upsell">Upsell</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Term Length</label>
+      <select id="termLength">
+        <option value="12-Month Term">12-Month Term</option>
+        <option value="24-Month Term" selected>24-Month Term</option>
+        <option value="36-Month Term">36-Month Term</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Year</label>
+      <input type="text" id="proposalYear" value="2026">
+    </div>
+  </div>
+
+  <div class="editor-grid">
+    <div class="field">
+      <label>Renewal / Close Date</label>
+      <input type="text" id="renewalDate" value="Apr 24, 2026">
+    </div>
+    <div class="field">
+      <label>Billing</label>
+      <select id="billing">
+        <option value="Annual" selected>Annual</option>
+        <option value="Monthly">Monthly</option>
+        <option value="Quarterly">Quarterly</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Payment Terms</label>
+      <select id="paymentTerms">
+        <option value="Net 30">Net 30</option>
+        <option value="Net 60" selected>Net 60</option>
+        <option value="Net 90">Net 90</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Sold To</label>
+      <input type="text" id="soldTo" value="James Watson">
+    </div>
+  </div>
+
+  <div class="editor-grid">
+    <div class="field" style="grid-column:span 2;">
+      <label>Prepared For (shown in footer)</label>
+      <input type="text" id="preparedFor" value="Culture Amp">
+    </div>
+    <div class="field" style="grid-column:span 2;">
+      <label>Prepared By (AE · CSM · etc, shown in header center)</label>
+      <input type="text" id="preparedBy" value="Kyle · Emma (CSM)">
+    </div>
+  </div>
+
+
+  <hr class="section-divider">
+
+  <!-- Savings & Uplift -->
+  <div class="editor-section-label">Savings & Uplift</div>
+  <div class="editor-grid">
+    <div class="field">
+      <label>Savings Line 1 Label</label>
+      <input type="text" id="savingsLabel1" value="Amplify credit discount">
+    </div>
+    <div class="field">
+      <label>Savings Line 1 Amount</label>
+      <input type="text" id="savingsAmt1" value="$37,500">
+    </div>
+    <div class="field">
+      <label>Savings Line 2 Label</label>
+      <input type="text" id="savingsLabel2" value="Uplift reduction (7% → 4%)">
+    </div>
+    <div class="field">
+      <label>Savings Line 2 Amount</label>
+      <input type="text" id="savingsAmt2" value="$5,485">
+    </div>
+  </div>
+
+  <div class="editor-grid-wide">
+    <div class="field">
+      <label>Banner Highlight (top green bar)</label>
+      <input type="text" id="bannerText" value="You're saving $37,500 on Amplify AI Agent credits — locked in at $0.40/credit vs. list price of $0.60">
+    </div>
+    <div class="field">
+      <label>Pricing Note</label>
+      <input type="text" id="upliftNote" value="4% uplift applied at renewal — reduced from the standard 7% in exchange for a 24-month commitment and Amplify expansion.">
+    </div>
+    <div class="field">
+      <label>Bill To</label>
+      <input type="text" id="billTo" value="Culture Amp Accounts">
+    </div>
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- Right Panel Card -->
+  <div class="editor-section-label">Right Panel Card (replaces "Why Act Now")</div>
+  <div class="editor-grid">
+    <div class="field" style="grid-column:span 4;">
+      <label>Card Header</label>
+      <input type="text" id="whyHeader" value="Why Act Now">
+    </div>
+  </div>
+  <div class="editor-grid">
+    <div class="field"><label>Row 1 Icon (emoji)</label><input type="text" id="row1Icon" value="📅"></div>
+    <div class="field"><label>Row 1 Title</label><input type="text" id="row1Title" value="Renewal date is April 24"></div>
+    <div class="field" style="grid-column:span 2;"><label>Row 1 Body</label><input type="text" id="row1Body" value="A lapse resets pricing to current list rates — locking in today protects seat pricing and any negotiated discounts."></div>
+  </div>
+  <div class="editor-grid">
+    <div class="field"><label>Row 2 Icon (emoji)</label><input type="text" id="row2Icon" value="⚡"></div>
+    <div class="field"><label>Row 2 Title</label><input type="text" id="row2Title" value="Amplify pricing is early-adopter"></div>
+    <div class="field" style="grid-column:span 2;"><label>Row 2 Body</label><input type="text" id="row2Body" value="$0.40/credit is an introductory rate. The 24-month term locks this in before pricing matures."></div>
+  </div>
+  <div class="editor-grid">
+    <div class="field"><label>Row 3 Icon (emoji)</label><input type="text" id="row3Icon" value="🏆"></div>
+    <div class="field"><label>Row 3 Title</label><input type="text" id="row3Title" value="Proven ROI at Culture Amp"></div>
+    <div class="field" style="grid-column:span 2;"><label>Row 3 Body</label><input type="text" id="row3Body" value="Your team has already seen measurable impact — this renewal locks in continuity and expands that foundation with AI."></div>
+  </div>
+  <div class="editor-grid">
+    <div class="field"><label>Row 4 Icon (emoji)</label><input type="text" id="row4Icon" value="🤝"></div>
+    <div class="field"><label>Row 4 Title</label><input type="text" id="row4Title" value="Dedicated support included"></div>
+    <div class="field" style="grid-column:span 2;"><label>Row 4 Body</label><input type="text" id="row4Body" value="Support Plus ensures your team has a dedicated resource for onboarding, troubleshooting, and maximizing adoption."></div>
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- Line Items -->
+  <div class="editor-section-label">Line Items</div>
+  <div id="lineItemsEditor"></div>
+  <button class="add-item-btn" onclick="addLineItem()">+ Add Line Item</button>
+
+  <br>
+  <button class="update-btn" onclick="renderSlide()">↻ Update Preview</button>
+</div>
+
+<!-- ── PREVIEW ── -->
+<div class="preview-wrap">
+  <div class="slide" id="slide">
+    <!-- rendered by JS -->
+  </div>
+</div>
+
+<script>
+  // ── DATA ──
+  const lineItems = [
+    { name: "Engage Seats", detail: "Full platform access per rep", seats: "215 seats", rate: "$63.74/mo", total: 164453, group: "core", strikeRate: "", strikeTotal: false },
+    { name: "Admin Seats", detail: "Platform administration", seats: "20 seats", rate: "$26/mo", total: 6240, group: "core", strikeRate: "", strikeTotal: false },
+    { name: "Voice: Global Calling", detail: "Unlimited global outbound", seats: "1 license", rate: "$300/mo", total: 3600, group: "addon", strikeRate: "", strikeTotal: false },
+    { name: "Outreach Support: Plus", detail: "Priority support & CSM access", seats: "1 license", rate: "$711/mo", total: 8535, group: "addon", strikeRate: "", strikeTotal: false },
+    { name: "Amplify AI Agent Credits", detail: "Autonomous prospecting & outreach execution", seats: "250,000 credits", rate: "$0.40", total: 100000, group: "ai", strikeRate: "$0.60", strikeTotal: false },
+  ];
+
+  function fmt(n) {
+    return '$' + Number(n).toLocaleString('en-US');
+  }
+
+  // ── BUILD EDITOR ROWS ──
+  function buildEditor() {
+    const wrap = document.getElementById('lineItemsEditor');
+    wrap.innerHTML = '';
+    lineItems.forEach((item, i) => {
+      wrap.innerHTML += `
+        <div class="line-item-editor" id="row-${i}">
+          <div class="field"><label>Name &amp; Detail (separate with |)</label>
+            <input type="text" value="${item.name}|${item.detail}" onchange="updateItem(${i},'nameDetail',this.value)">
+          </div>
+          <div class="field"><label>Seats / Credits</label>
+            <input type="text" value="${item.seats}" onchange="updateItem(${i},'seats',this.value)">
+          </div>
+          <div class="field"><label>Rate (strike: old|new)</label>
+            <input type="text" value="${item.strikeRate ? item.strikeRate+'|'+item.rate : item.rate}" onchange="updateItem(${i},'rate',this.value)">
+          </div>
+          <div class="field"><label>Total ($)</label>
+            <input type="number" value="${item.total}" onchange="updateItem(${i},'total',this.value)">
+          </div>
+          <div class="field"><label>Group</label>
+            <select onchange="updateItem(${i},'group',this.value)">
+              <option value="core" ${item.group==='core'?'selected':''}>Core</option>
+              <option value="addon" ${item.group==='addon'?'selected':''}>Add-on</option>
+              <option value="ai" ${item.group==='ai'?'selected':''}>AI</option>
+            </select>
+          </div>
+          <button class="remove-btn" onclick="removeItem(${i})">×</button>
+        </div>`;
+    });
+  }
+
+  function updateItem(i, field, val) {
+    if (field === 'nameDetail') {
+      const parts = val.split('|');
+      lineItems[i].name = parts[0] || val;
+      lineItems[i].detail = parts[1] || '';
+    } else if (field === 'rate') {
+      const parts = val.split('|');
+      if (parts.length === 2) { lineItems[i].strikeRate = parts[0]; lineItems[i].rate = parts[1]; }
+      else { lineItems[i].strikeRate = ''; lineItems[i].rate = val; }
+    } else if (field === 'total') {
+      lineItems[i].total = parseFloat(val) || 0;
+    } else {
+      lineItems[i][field] = val;
+    }
+  }
+
+  function removeItem(i) {
+    lineItems.splice(i, 1);
+    buildEditor();
+  }
+
+  function addLineItem() {
+    lineItems.push({ name: "New Item", detail: "Description", seats: "1", rate: "$0/mo", total: 0, group: "addon", strikeRate: "" });
+    buildEditor();
+    renderSlide();
+  }
+
+  // ── RENDER SLIDE ──
+  function renderSlide() {
+    const customer = document.getElementById('customerName').value || 'Customer';
+    const type = document.getElementById('proposalType').value;
+    const term = document.getElementById('termLength').value;
+    const year = document.getElementById('proposalYear').value;
+    const renewalDate = document.getElementById('renewalDate').value;
+    const preparedFor = document.getElementById('preparedFor').value || customer;
+    const preparedBy = document.getElementById('preparedBy').value || '';
+    const billing = document.getElementById('billing').value;
+    const paymentTerms = document.getElementById('paymentTerms').value;
+    const soldTo = document.getElementById('soldTo').value;
+    const billTo = document.getElementById('billTo').value;
+    const bannerText = document.getElementById('bannerText').value;
+    const upliftNote = document.getElementById('upliftNote').value;
+    const whyHeader = document.getElementById('whyHeader').value || 'Why Act Now';
+    const row1Icon = document.getElementById('row1Icon').value;
+    const row1Title = document.getElementById('row1Title').value;
+    const row1Body = document.getElementById('row1Body').value;
+    const row2Icon = document.getElementById('row2Icon').value;
+    const row2Title = document.getElementById('row2Title').value;
+    const row2Body = document.getElementById('row2Body').value;
+    const row3Icon = document.getElementById('row3Icon').value;
+    const row3Title = document.getElementById('row3Title').value;
+    const row3Body = document.getElementById('row3Body').value;
+    const row4Icon = document.getElementById('row4Icon').value;
+    const row4Title = document.getElementById('row4Title').value;
+    const row4Body = document.getElementById('row4Body').value;
+    const sl1 = document.getElementById('savingsLabel1').value;
+    const sa1 = document.getElementById('savingsAmt1').value;
+    const sl2 = document.getElementById('savingsLabel2').value;
+    const sa2 = document.getElementById('savingsAmt2').value;
+
+    // Calculate totals
+    const grandTotal = lineItems.reduce((s, i) => s + Number(i.total), 0);
+
+    // Parse savings total (strip $ and commas)
+    const s1 = parseFloat(sa1.replace(/[$,]/g,'')) || 0;
+    const s2 = parseFloat(sa2.replace(/[$,]/g,'')) || 0;
+    const totalSavings = fmt(s1 + s2);
+
+    // Group items
+    const groups = {
+      core:  { label: 'Core Platform',  tag: 'tag-core',  items: [] },
+      addon: { label: 'Add-ons',        tag: 'tag-addon', items: [] },
+      ai:    { label: 'AI Agents',      tag: 'tag-ai',    items: [] },
+    };
+
+    lineItems.forEach(item => {
+      const g = groups[item.group] || groups.addon;
+      const rateHtml = item.strikeRate
+        ? `<span class="strike">${item.strikeRate}</span>${item.rate}`
+        : item.rate;
+      const isAi = item.group === 'ai';
+      g.items.push(`
+        <div class="item ${isAi ? 'ai-item' : ''}">
+          <div>
+            <div class="item-name">${item.name}</div>
+            <div class="item-detail">${item.detail}</div>
+          </div>
+          <div class="item-seats">${item.seats} · ${rateHtml}</div>
+          <div class="item-cost">${fmt(item.total)}</div>
+        </div>`);
+    });
+
+    const activeGroups = Object.values(groups).filter(g => g.items.length > 0);
+    const groupsHtml = activeGroups.map((g, idx) => `
+      <div class="item-group">
+        <div class="group-header"><span class="group-tag ${g.tag}">${g.label}</span></div>
+        ${g.items.join('')}
+      </div>
+      ${idx < activeGroups.length - 1 ? '<hr class="group-divider">' : ''}
+    `).join('');
+
+    const termMap = { '12-Month Term': '12 Months', '24-Month Term': '24 Months', '36-Month Term': '36 Months' };
+    const termDisplay = termMap[term] || term;
+
+    document.getElementById('slide').innerHTML = `
+      <div class="header" style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:24px;">
+        <div class="header-left">
+          <div class="eyebrow">${type} Proposal · ${term}</div>
+          <h1>${customer}'s<br><span>${type} ${year}</span></h1>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+          ${preparedBy ? `
+            <div style="font-size:10px;color:rgba(255,255,255,0.35);font-family:'SF Mono',Consolas,'Courier New',monospace;letter-spacing:0.12em;text-align:center;text-transform:uppercase;margin-bottom:2px;">Prepared by</div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+              ${preparedBy.split('·').map(name => `<div style="font-size:13px;color:rgba(255,255,255,0.75);font-family:'SF Mono',Consolas,'Courier New',monospace;letter-spacing:0.05em;text-align:center;">${name.trim()}</div>`).join('')}
+            </div>` : ''}
+        </div>
+        <div class="header-right">
+          <div class="total-label">Total Annual Investment</div>
+          <div class="total-amount">${fmt(grandTotal)}</div>
+          <div class="total-sub">billed ${billing.toLowerCase()} · ${paymentTerms.toLowerCase()}</div>
+        </div>
+      </div>
+
+      <div class="savings-banner">
+        <span>✦</span>
+        <p>${bannerText}</p>
+      </div>
+
+      <div class="body">
+        <div class="line-items">
+          ${groupsHtml}
+          <div class="terms-row-bottom">
+            <div class="terms-card" style="margin-top:8px;">
+              <div class="card-label">Deal Terms</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;">
+                <div class="term-row" style="padding-right:24px;">
+                  <span class="term-key">${type} Date</span>
+                  <span class="term-val renewal-badge">${renewalDate}</span>
+                </div>
+                <div class="term-row" style="padding-left:24px;border-left:1px solid var(--border);">
+                  <span class="term-key">Billing</span>
+                  <span class="term-val">${billing}</span>
+                </div>
+                <div class="term-row" style="padding-right:24px;">
+                  <span class="term-key">Term Length</span>
+                  <span class="term-val">${termDisplay}</span>
+                </div>
+                <div class="term-row" style="padding-left:24px;border-left:1px solid var(--border);">
+                  <span class="term-key">Payment Terms</span>
+                  <span class="term-val">${paymentTerms}</span>
+                </div>
+                <div class="term-row" style="padding-right:24px;">
+                  <span class="term-key">Sold To</span>
+                  <span class="term-val">${soldTo}</span>
+                </div>
+                <div class="term-row" style="padding-left:24px;border-left:1px solid var(--border);">
+                  <span class="term-key">Bill To</span>
+                  <span class="term-val">${billTo}</span>
+                </div>
+              </div>
+            </div>
+            <div class="uplift-note" style="margin-top:12px;">${upliftNote}</div>
+          </div>
+        </div>
+
+        <div class="right-panel">
+          <div class="savings-card">
+            <div class="card-label">Total savings this ${type.toLowerCase()}</div>
+            <div class="savings-big">${totalSavings}</div>
+            <div class="savings-sub">vs. standard pricing &amp; list rates</div>
+            <hr class="savings-divider">
+            <div class="savings-breakdown">
+              <div class="savings-row">
+                <span style="color:rgba(255,255,255,0.5)">${sl1}</span>
+                <span style="color:#fff;font-family:'SF Mono',Consolas,'Courier New',monospace">${sa1}</span>
+              </div>
+              <div class="savings-row">
+                <span style="color:rgba(255,255,255,0.5)">${sl2}</span>
+                <span style="color:#fff;font-family:'SF Mono',Consolas,'Courier New',monospace">${sa2}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="why-now-card">
+            <div class="card-label">${whyHeader}</div>
+            ${[
+              [row1Icon, row1Title, row1Body, 'why-icon-1'],
+              [row2Icon, row2Title, row2Body, 'why-icon-2'],
+              [row3Icon, row3Title, row3Body, 'why-icon-1'],
+              [row4Icon, row4Title, row4Body, 'why-icon-2'],
+            ].filter(r => r[1] || r[2]).map(([icon, title, body, cls]) => `
+              <div class="why-row">
+                <div class="why-icon ${cls}">${icon}</div>
+                <div>
+                  <div class="why-title">${title}</div>
+                  <div class="why-body">${body}</div>
+                </div>
+              </div>`).join('')}
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="footer-left">Prepared for <strong>${preparedFor}</strong></div>
+        <div class="outreach-logo"><span style="font-size:20px;font-weight:700;color:#5951FF;letter-spacing:-0.5px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">outreach</span></div>
+      </div>
+    `;
+  }
+
+  // ── INIT ──
+  buildEditor();
+  renderSlide();
+</script>
+</body>
+</html>
