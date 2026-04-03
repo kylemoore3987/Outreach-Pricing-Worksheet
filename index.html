@@ -507,42 +507,10 @@
   }
 
   /* Print/Export */
-  @media print {
-    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-    .editor-wrap { display: none !important; }
-    .export-btn-wrap { display: none !important; }
-    html, body {
-      margin: 0 !important;
-      padding: 0 !important;
-      width: 100% !important;
-      height: 100% !important;
-      background: white !important;
-      overflow: hidden !important;
-    }
-    .preview-wrap {
-      padding: 0 !important;
-      display: flex !important;
-      justify-content: center !important;
-      align-items: flex-start !important;
-      width: 100% !important;
-      height: 100% !important;
-    }
-    .slide {
-      border-radius: 0 !important;
-      box-shadow: none !important;
-      width: 1100px !important;
-      transform: scale(0.88) !important;
-      transform-origin: top center !important;
-      page-break-inside: avoid !important;
-      page-break-after: avoid !important;
-      page-break-before: avoid !important;
-    }
-    @page {
-      size: 1400px 900px landscape;
-      margin: 0;
-    }
-  }
+
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
 
@@ -968,8 +936,41 @@
   }
 
   // ── EXPORT ──
-  function exportPDF() {
-    window.print();
+  async function exportPDF() {
+    const btn = document.querySelector('.export-btn-wrap button');
+    const originalText = btn.innerText;
+    btn.innerText = '⏳ Generating PDF...';
+    btn.disabled = true;
+
+    const slide = document.getElementById('slide');
+    const canvas = await html2canvas(slide, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#f8f7fc',
+      logging: false,
+      width: slide.offsetWidth,
+      height: slide.offsetHeight
+    });
+
+    const imgData = canvas.toDataURL('image/png');
+    const { jsPDF } = window.jspdf;
+
+    const slideW = slide.offsetWidth;
+    const slideH = slide.offsetHeight;
+    const ratio = slideH / slideW;
+
+    // A4 landscape in mm
+    const pdfW = 297;
+    const pdfH = pdfW * ratio;
+
+    const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: [pdfW, pdfH] });
+    pdf.addImage(imgData, 'PNG', 0, 0, pdfW, pdfH);
+
+    const customerName = document.getElementById('customerName').value || 'Proposal';
+    pdf.save(`${customerName} - Outreach Proposal.pdf`);
+
+    btn.innerText = originalText;
+    btn.disabled = false;
   }
 
   // ── INIT ──
