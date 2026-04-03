@@ -935,11 +935,15 @@
 
   // ── EXPORT ──
   function exportPDF() {
-    // Grab the current rendered slide HTML
     const slideHTML = document.getElementById('slide').outerHTML;
     const customerName = document.getElementById('customerName').value || 'Proposal';
+    const allStyles = Array.from(document.styleSheets)
+      .map(sheet => {
+        try {
+          return Array.from(sheet.cssRules).map(r => r.cssText).join('\n');
+        } catch(e) { return ''; }
+      }).join('\n');
 
-    // Build a clean standalone page with just the slide
     const printPage = `<!DOCTYPE html>
 <html>
 <head>
@@ -947,27 +951,27 @@
 <title>${customerName} - Outreach Proposal</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-  html, body { width: 1100px; background: #1a1825; }
-  body { display: flex; justify-content: center; align-items: flex-start; padding: 0; }
-  @page { size: 1100px auto; margin: 0; }
+  html, body { background: #f8f7fc; display: flex; justify-content: center; align-items: flex-start; }
+  .slide { width: 1100px; border-radius: 24px; overflow: hidden; box-shadow: none; animation: none !important; }
+  @page { size: landscape; margin: 0; }
   @media print {
-    html, body { width: 1100px; }
-    .slide { page-break-inside: avoid; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    html, body { width: 100%; margin: 0; padding: 0; }
+    .slide { width: 100vw; border-radius: 0; }
   }
+  ${allStyles}
 </style>
 </head>
 <body>
 ${slideHTML}
 <script>
-  // Auto-trigger print dialog as soon as fonts/styles load
   window.onload = function() {
-    setTimeout(function() { window.print(); }, 800);
+    setTimeout(function() { window.print(); }, 1000);
   };
 <\/script>
 </body>
 </html>`;
 
-    // Open in new tab
     const w = window.open('', '_blank');
     w.document.open();
     w.document.write(printPage);
